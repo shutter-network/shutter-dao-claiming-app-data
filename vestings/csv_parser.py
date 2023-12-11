@@ -36,10 +36,9 @@ def read_vesting_file(
             if "startDate" in row.keys():
                 start_date_timestamp = int(parse(row["startDate"]).timestamp())
             else:
-                start_date_timestamp = 1688688000000
-                # start_date_timestamp = int(
-                #     parse("2023-07-07T00:00:00+00:00").timestamp()
-                # )
+                start_date_timestamp = int(
+                    parse("2023-07-07T00:00:00+00:00").timestamp()
+                )
 
             amount = row["amount"]
 
