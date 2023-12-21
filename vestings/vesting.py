@@ -13,7 +13,6 @@ from web3 import Web3
 
 class VestingType(Enum):
     USER = 0
-    SPT_CONVERSION = 1
 
 
 @cache
@@ -43,6 +42,7 @@ class Vesting:
     startDate: int
     amount: str
     initialUnlock: str
+    requiresSPT: bool
     proof: List[HexStr]
 
     # TODO Calculate on init
@@ -61,6 +61,7 @@ class Vesting:
                         "uint64",
                         "uint128",
                         "uint128",
+                        "bool"
                     ),
                     (
                         VESTING_TYPEHASH,
@@ -70,7 +71,8 @@ class Vesting:
                         self.durationWeeks,
                         self.startDate,
                         int(self.amount),
-                        int(self.initialUnlock)
+                        int(self.initialUnlock),
+                        bool(self.requiresSPT)
                     ),
                 )
             ],

@@ -9,7 +9,7 @@ Vesting data converter and proofs generator.
 ### Prerequisites
 
 - Place csv files with vesting data under `vestings/assets/{chain_id}/{type}_airdrop.csv`.
-Naming should be `user_airdrop.csv`, `sptconversion_airdrop.csv`.
+Naming should be `user_airdrop.csv`.
 
 ### Vesting csv
 Vesting csv file contains following fields

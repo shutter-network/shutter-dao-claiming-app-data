@@ -47,6 +47,11 @@ def read_vesting_file(
             else:
                 initial_unlock = "0"
 
+            if "requiresSPT" in row.keys():
+                requires_spt = bool(row["requiresSPT"])
+            else:
+                requires_spt = False
+
             curve_type = 0
 
             vesting = Vesting(
@@ -60,6 +65,7 @@ def read_vesting_file(
                 start_date_timestamp,
                 amount,
                 initial_unlock,
+                requires_spt,
                 [],
             )
             vestings.append(vesting)
@@ -82,9 +88,6 @@ def parse_vestings_csv(chain_id: int) -> Dict[VestingType, List[Vesting]]:
         vesting_file = {
             VestingType.USER: os.path.join(
                 CURRENT_DIRECTORY, f"assets/{chain_id}/user_airdrop.csv"
-            ),
-            VestingType.SPT_CONVERSION: os.path.join(
-                CURRENT_DIRECTORY, f"assets/{chain_id}/sptconversion_airdrop.csv"
             ),
         }.get(vesting_type)
         if not vesting_file:
