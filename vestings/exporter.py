@@ -11,30 +11,29 @@ from vesting import EnhancedJSONEncoder, Vesting
 
 
 def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Vesting]]:
-    vesting_type_with_vestings = parse_vestings_csv(chain_id)
-    vesting_type_with_vesting_tree = {}
+    vestings = parse_vestings_csv(chain_id)
     account_with_vestings = {}
+    vesting_ids = list()
+    for vesting in vestings:
 
-    for vesting_type, vestings in vesting_type_with_vestings.items():
-        vesting_ids = []
         # As we have to iterate vestings to get the ids, we also use that loop
         # to build a dictionary with vestings grouped by account
-        for vesting in vestings:
-            vesting_ids.append(vesting.vestingId)
-            account_with_vestings.setdefault(vesting.account, []).append(vesting)
-        vesting_tree = generate_vestings_tree(vesting_ids)
-        vesting_type_with_vesting_tree[vesting_type] = vesting_tree
-        print(vesting_type, "root", vesting_tree[-1][0])
+
+        vesting_ids.append(vesting.vestingId)
+        account_with_vestings.setdefault(vesting.account, []).append(vesting)
+
+    vesting_tree = generate_vestings_tree(vesting_ids)
+    print("root", vesting_tree[-1][0])
 
     # Sort accounts dictionary
     account_with_vestings = dict(
         sorted(account_with_vestings.items(), key=lambda x: x[0].lower())
     )
 
-    for account, vestings in account_with_vestings.items():
-        for vesting in vestings:
-            vesting.proof = extract_proofs(
-                vesting_type_with_vesting_tree[vesting.tag], vesting.vestingId
+    for account, account_vestings in account_with_vestings.items():
+        for account_vesting in account_vestings:
+            account_vesting.proof = extract_proofs(
+                vesting_tree, account_vesting.vestingId
             )
         with open(f"{output_dir}/{account}.json", "w") as file:
             file.write(json.dumps(vestings, indent=4, cls=EnhancedJSONEncoder))

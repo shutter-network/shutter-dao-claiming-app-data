@@ -12,9 +12,6 @@ from hexbytes import HexBytes
 from web3 import Web3
 
 
-class VestingType(Enum):
-    USER = 0
-
 
 @cache
 def calculate_domain_separator() -> bytes:
@@ -32,7 +29,6 @@ def calculate_domain_separator() -> bytes:
 @dataclasses.dataclass
 class Vesting:
     vestingId: Optional[HexStr]
-    tag: VestingType
     account: ChecksumAddress
     chainId: int
     curve: int
@@ -99,6 +95,4 @@ class EnhancedJSONEncoder(json.JSONEncoder):
     def default(self, o):
         if dataclasses.is_dataclass(o):
             return dataclasses.asdict(o)
-        elif isinstance(o, VestingType):
-            return o.name.lower()
         return super().default(o)

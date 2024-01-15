@@ -1,16 +1,17 @@
 import csv
 import os
-from typing import Dict, List
+from pathlib import Path
+from typing import List
 
 from dateutil.parser import parse
-from vesting import Vesting, VestingType
+from vesting import Vesting
 from web3 import Web3
 
 CURRENT_DIRECTORY = os.path.dirname(__file__)
 
 
 def read_vesting_file(
-    vesting_file: str, chain_id: int, vesting_type: VestingType
+    vesting_file: Path, chain_id: int
 ) -> List[Vesting]:
     vestings: List[Vesting] = []
 
@@ -18,7 +19,7 @@ def read_vesting_file(
         csv_reader = csv.DictReader(csv_file)
 
         print(80 * "-")
-        print(f"Processing {vesting_type.name} vestings")
+        print(f"Processing {vesting_file.absolute()}")
 
         for row in csv_reader:
             owner = Web3.to_checksum_address(row["owner"])
@@ -53,7 +54,6 @@ def read_vesting_file(
 
             vesting = Vesting(
                 None,
-                vesting_type,
                 owner,
                 chain_id,
                 curve_type,
@@ -73,26 +73,16 @@ def read_vesting_file(
                 if vesting_id != calculated_vesting_id:
                     raise ValueError("provided and calculated vesting id do not match!")
 
-        print(f"Processed {len(vestings)} {vesting_type} vestings.")
+        print(f"Processed {len(vestings)} vestings.")
         print(80 * "-")
         return vestings
 
 
-def parse_vestings_csv(chain_id: int) -> Dict[VestingType, List[Vesting]]:
-    vesting_type_with_vestings = {}
-    for vesting_type in VestingType:
-        vesting_file = {
-            VestingType.USER: os.path.join(
-                CURRENT_DIRECTORY, f"assets/{chain_id}/user_airdrop.csv"
-            ),
-        }.get(vesting_type)
-        if not vesting_file:
-            raise ValueError(f"Not a valid vestings type: {vesting_type}")
+def parse_vestings_csv(chain_id: int) -> List[Vesting]:
 
-        if not os.path.exists(vesting_file):
-            print(vesting_file, "does not exist")
-
-        vesting_type_with_vestings[vesting_type] = read_vesting_file(
-            vesting_file, chain_id, vesting_type
-        )
-    return vesting_type_with_vestings
+    files = [f for f in Path(f"{CURRENT_DIRECTORY}/assets/{str(chain_id)}").glob("*.csv")]
+    print(f"Found {len(files)} files")
+    vesting_list = []
+    for f in files:
+        vesting_list.extend(read_vesting_file(f, chain_id))
+    return vesting_list
