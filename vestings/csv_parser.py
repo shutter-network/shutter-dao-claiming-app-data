@@ -2,7 +2,6 @@ import csv
 import os
 from typing import Dict, List
 
-from addresses import get_airdrop_addresses
 from dateutil.parser import parse
 from vesting import Vesting, VestingType
 from web3 import Web3
@@ -14,9 +13,7 @@ def read_vesting_file(
     vesting_file: str, chain_id: int, vesting_type: VestingType
 ) -> List[Vesting]:
     vestings: List[Vesting] = []
-    airdrop_address = Web3.to_checksum_address(
-        get_airdrop_addresses(chain_id)[vesting_type]
-    )
+
     with open(vesting_file, mode="r") as csv_file:
         csv_reader = csv.DictReader(csv_file)
 
@@ -58,7 +55,6 @@ def read_vesting_file(
                 None,
                 vesting_type,
                 owner,
-                airdrop_address,
                 chain_id,
                 curve_type,
                 duration_weeks,
