@@ -11,14 +11,13 @@ from eth_typing import ChecksumAddress, HexStr
 from hexbytes import HexBytes
 from web3 import Web3
 
+
 class VestingType(Enum):
     USER = 0
 
 
 @cache
-def calculate_domain_separator(
-    airdrop_address: ChecksumAddress, chain_id: int
-) -> bytes:
+def calculate_domain_separator() -> bytes:
     return Web3.solidity_keccak(
         ["bytes"],
         [
@@ -35,7 +34,6 @@ class Vesting:
     vestingId: Optional[HexStr]
     tag: VestingType
     account: ChecksumAddress
-    contract: ChecksumAddress
     chainId: int
     curve: int
     durationWeeks: int
@@ -47,7 +45,7 @@ class Vesting:
 
     # TODO Calculate on init
     def calculateHash(self) -> HexStr:
-        domain_separator = calculate_domain_separator(self.contract, self.chainId)
+        domain_separator = calculate_domain_separator()
         vesting_data_hash = Web3.solidity_keccak(
             ["bytes"],
             [
