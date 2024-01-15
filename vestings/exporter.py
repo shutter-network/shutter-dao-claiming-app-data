@@ -39,6 +39,13 @@ def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Ve
         with open(f"{output_dir}/{account}.json", "w") as file:
             file.write(json.dumps(vestings, indent=4, cls=EnhancedJSONEncoder))
 
+    with open(f"{output_dir}/merkle-drop-allocations-data.json", "w") as file:
+        file.write(
+            json.dumps(
+                list(account_with_vestings.values()), indent=4, cls=EnhancedJSONEncoder
+            )
+        )
+
     return account_with_vestings
 
 
