@@ -1,9 +1,11 @@
 import csv
 import os
+from decimal import Decimal
 from pathlib import Path
 from typing import List
 
-from dateutil.parser import parse
+from datetime import date, datetime, time
+
 from vesting import Vesting
 from web3 import Web3
 
@@ -23,32 +25,11 @@ def read_vesting_file(
 
         for row in csv_reader:
             owner = Web3.to_checksum_address(row["owner"])
-            duration_weeks: int
-            start_date_timestamp: int
-
-            if "duration" in row.keys():
-                duration_weeks = int(row["duration"])
-            else:
-                duration_weeks = 416
-
-            if "startDate" in row.keys():
-                start_date_timestamp = int(parse(row["startDate"]).timestamp())
-            else:
-                start_date_timestamp = int(
-                    parse("2023-07-07T00:00:00+00:00").timestamp()
-                )
-
-            amount = row["amount"]
-
-            if "initialUnlock" in row.keys():
-                initial_unlock = row["initialUnlock"]
-            else:
-                initial_unlock = "0"
-
-            if "requiresSPT" in row.keys():
-                requires_spt = bool(row["requiresSPT"])
-            else:
-                requires_spt = False
+            duration_weeks = int(float(row["duration"])*4.33)
+            start_date_timestamp = int(datetime.combine(date.fromisoformat(row["startDate"]), time(0, 0, 0)).timestamp())
+            amount = Decimal(row["amount"]) * Decimal("1e18")
+            initial_unlock = amount * Decimal(row["initialUnlock"])
+            requires_spt = row["requiresSPT"].lower() == "true"
 
             curve_type = 0
 
@@ -59,8 +40,8 @@ def read_vesting_file(
                 curve_type,
                 duration_weeks,
                 start_date_timestamp,
-                amount,
-                initial_unlock,
+                str(int(amount)),
+                str(int(initial_unlock)),
                 requires_spt,
                 [],
             )
