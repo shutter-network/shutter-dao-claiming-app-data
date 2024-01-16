@@ -45,6 +45,9 @@ def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Ve
             )
         )
 
+    with open(f"{output_dir}/root.txt", "w") as file:
+        file.write(vesting_tree[-1][0])
+
     return account_with_vestings
 
 
