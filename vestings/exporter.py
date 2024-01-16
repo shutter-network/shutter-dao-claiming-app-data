@@ -14,6 +14,7 @@ def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Ve
     vestings = parse_vestings_csv(chain_id)
     account_with_vestings = {}
     vesting_ids = list()
+    amount = 0
     for vesting in vestings:
 
         # As we have to iterate vestings to get the ids, we also use that loop
@@ -21,6 +22,7 @@ def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Ve
 
         vesting_ids.append(vesting.vestingId)
         account_with_vestings.setdefault(vesting.account, []).append(vesting)
+        amount += int(vesting.amount)
 
     vesting_tree = generate_vestings_tree(vesting_ids)
     print("root", vesting_tree[-1][0])
@@ -44,6 +46,9 @@ def export_data(chain_id: int, output_dir: str) -> Dict[ChecksumAddress, List[Ve
                 list(account_with_vestings.values()), indent=4, cls=EnhancedJSONEncoder
             )
         )
+
+    with open(f"{output_dir}/deployment_data.json", "w") as file:
+        file.write(json.dumps(dict(rootHash=vesting_tree[-1][0], tokenBalance=amount), indent=4, cls=EnhancedJSONEncoder))
 
     return account_with_vestings
 
