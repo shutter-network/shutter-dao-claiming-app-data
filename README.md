@@ -8,16 +8,17 @@ Vesting data converter and proofs generator.
 
 ### Prerequisites
 
-- Place csv files with vesting data under `vestings/assets/{chain_id}/{type}_airdrop.csv`.
-Naming should be `user_airdrop.csv`.
+- Place csv files with vesting data under `vestings/assets/{chain_id}/*.csv`.
 
-### Vesting csv
-Vesting csv file contains following fields
+### Vesting CSVs
+Vesting csv files contains following fields
 
- - Owner address
- - Vesting duration in weeks
- - Vesting start date (ISO 8601 Format)
- - Vesting amount in wei
+ - `owner`: Must be an Ethereum address
+ - `amount`: Token amount to be allocated
+ - `duration`: Vesting duration in months
+ - `startDate`: Vesting start date (ISO 8601 Format YYYY-MM-DD)
+ - `initialUnlock`: Initial unlocked token share in decimal fraction (0...1)
+ - `requiresSPT`: TRUE or FALSE if it is required to exchange SPT tokens upon claiming tokens (only true for SPT holders)
 
 ### Allocation file structure
 
@@ -29,7 +30,6 @@ Contains all defined allocations for a specific address with proofs.
         "tag": "[user | spt_conversion]",
         "account": "checksummed address",
         "chainId": chain id,
-        "contract": "checksummed airdrop contract addres",
         "vestingId": "vesting hash",
         "durationWeeks": integer,
         "startDate": timestamp,
@@ -59,12 +59,7 @@ pip install pre-commit
 pre-commit install -f
 ```
 
-## Vestings
-
-Place vesting csv files for a network under `vestings/assets/{chain_id}`.
-Naming should be `user_airdrop.csv` for user airdrop.
-
-### Generating
+## Generating output files
 
 Now exporter script can be used to parse vesting csv files, generate proofs, and export data for claiming. The aforementioned steps can be performed at once or separately.
 
@@ -76,6 +71,14 @@ python exporter.py --chain-id 1 --output-directory ../data/allocations
 
 Exporter will place generated files under `{output_directory}/{chain_id}`
 
+### Output files
+For each address an allocation file is created `{address}.json`. These files contain the merkle proof and all relevant
+data to redeem the tokens into the vesting pool contract at a later point in time.
+
+Additionally, the file `root.txt` is created containing the merkle root. Take this value and configure the respective
+parameter upon DAO deployment.
+
+All files are located under `{output_directory}/{chain_id}`.
 
 # Contribute
 You can contribute to this repo by creating a Pull Request or an issue. Please follow the default template set for the Pull Requests.
