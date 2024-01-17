@@ -1,9 +1,7 @@
 # claiming-app-data
-The code in this repository was originally copied from the [gnosis/safe-claiming-app-data](
-https://github.com/safe-global/claiming-app-data/
-) repo and then modified to suit the Shutter DAO requirements
+The code in this repository was originally copied from the [gnosis/safe-claiming-app-data](https://github.com/safe-global/claiming-app-data/) repo and then modified to suit the Shutter DAO requirements.
 
-Vesting data converter and proofs generator.
+A vesting data converter and proof generator.
 
 
 ### Prerequisites
@@ -11,14 +9,14 @@ Vesting data converter and proofs generator.
 - Place csv files with vesting data under `vestings/assets/{chain_id}/*.csv`.
 
 ### Vesting CSVs
-Vesting csv files contains following fields
+Vesting CSV files contains the following fields
 
- - `owner`: Must be an Ethereum address
- - `amount`: Token amount to be allocated
- - `duration`: Vesting duration in months
- - `startDate`: Vesting start date (ISO 8601 Format YYYY-MM-DD)
- - `initialUnlock`: Initial unlocked token share in decimal fraction (0...1)
- - `requiresSPT`: TRUE or FALSE if it is required to exchange SPT tokens upon claiming tokens (only true for SPT holders)
+- `owner`: Must be an Ethereum address
+- `amount`: Token amount to be allocated
+- `duration`: Vesting duration in months
+- `startDate`: Vesting start date (ISO 8601 Format YYYY-MM-DD)
+- `initialUnlock`: Initial unlocked token share in decimal fraction (0...1)
+- `requiresSPT`: TRUE or FALSE if it is required to exchange SPT tokens upon claiming tokens (only valid for SPT holders)
 
 ### Allocation file structure
 
@@ -44,7 +42,7 @@ Contains all defined allocations for a specific address with proofs.
 
 
 # Setting up locally
-Create python virtual environment
+Create a Python virtual environment
 ```
 python -m venv venv
 ```
@@ -61,7 +59,7 @@ pre-commit install -f
 
 ## Generating output files
 
-Now exporter script can be used to parse vesting csv files, generate proofs, and export data for claiming. The aforementioned steps can be performed at once or separately.
+The exporter script can parse vesting CSV files, generate proofs, and export data for claiming. The steps mentioned earlier can be performed at once or separately.
 
 Example:
 ```
@@ -72,11 +70,9 @@ python exporter.py --chain-id 1 --output-directory ../data/allocations
 Exporter will place generated files under `{output_directory}/{chain_id}`
 
 ### Output files
-For each address an allocation file is created `{address}.json`. These files contain the merkle proof and all relevant
-data to redeem the tokens into the vesting pool contract at a later point in time.
+For each address, an allocation file is created `{address}.json`. These files contain the Merkle proof and all relevant data to redeem the tokens into the vesting pool contract later.
 
-Additionally, the file `root.txt` is created containing the merkle root. Take this value and configure the respective
-parameter upon DAO deployment.
+Additionally, the file `root.txt` containing the Merkle root is created. Take this value and configure the respective parameter upon DAO deployment.
 
 All files are located under `{output_directory}/{chain_id}`.
 
