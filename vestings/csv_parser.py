@@ -61,7 +61,7 @@ def read_vesting_file(
 
 def parse_vestings_csv(chain_id: int) -> List[Vesting]:
 
-    files = [f for f in Path(f"{CURRENT_DIRECTORY}/assets/{str(chain_id)}").glob("*.csv")]
+    files = list(sorted(Path(f"{CURRENT_DIRECTORY}/assets/{str(chain_id)}").glob("*.csv")))
     print(f"Found {len(files)} files")
     vesting_list = []
     for f in files:
