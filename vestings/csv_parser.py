@@ -1,10 +1,11 @@
 import csv
 import os
+from datetime import date, datetime, time
 from decimal import Decimal
 from pathlib import Path
 from typing import List
 
-from datetime import date, datetime, time
+import pytz
 
 from vesting import Vesting
 from web3 import Web3
@@ -17,6 +18,8 @@ def read_vesting_file(
 ) -> List[Vesting]:
     vestings: List[Vesting] = []
 
+    tz_cet = pytz.timezone("CET")
+
     with open(vesting_file, mode="r") as csv_file:
         csv_reader = csv.DictReader(csv_file)
 
@@ -26,7 +29,14 @@ def read_vesting_file(
         for row in csv_reader:
             owner = Web3.to_checksum_address(row["owner"])
             duration_weeks = int(float(row["duration"])*4.33)
-            start_date_timestamp = int(datetime.combine(date.fromisoformat(row["startDate"]), time(0, 0, 0)).timestamp())
+            start_date_timestamp = int(
+                tz_cet.localize(
+                    datetime.combine(
+                        date.fromisoformat(row["startDate"]),
+                        time(0, 0, 0)
+                    )
+                ).timestamp()
+            )
             amount = Decimal(row["amount"]) * Decimal("1e18")
             initial_unlock = amount * Decimal(row["initialUnlock"])
             requires_spt = row["requiresSPT"].lower() == "true"
@@ -61,7 +71,7 @@ def read_vesting_file(
 
 def parse_vestings_csv(chain_id: int) -> List[Vesting]:
 
-    files = [f for f in Path(f"{CURRENT_DIRECTORY}/assets/{str(chain_id)}").glob("*.csv")]
+    files = list(sorted(Path(f"{CURRENT_DIRECTORY}/assets/{str(chain_id)}").glob("*.csv")))
     print(f"Found {len(files)} files")
     vesting_list = []
     for f in files:
