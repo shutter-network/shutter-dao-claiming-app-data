@@ -1,0 +1,14 @@
+[
+    {
+        "vestingId": "",
+        "account": "",
+        "chainId": 1,
+        "curve": ,
+        "durationWeeks": ,
+        "startDate": ,
+        "amount": "",
+        "initialUnlock": "",
+        "requiresSPT": false,
+        "proof": []
+    }
+]

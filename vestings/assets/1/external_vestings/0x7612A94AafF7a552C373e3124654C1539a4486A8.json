@@ -1,0 +1,14 @@
+[
+    {
+        "vestingId": "0xf9b0de7062cc9bab2ecc4d0f19cf174dddb4d84344f521875aacc103ed5fe649",
+        "account": "0x7612A94AafF7a552C373e3124654C1539a4486A8",
+        "chainId": 1,
+        "curve": 0,
+        "durationWeeks": 103,
+        "startDate": 1710720000,
+        "amount": "750000000000000000000000",
+        "initialUnlock": "75000000000000000000000",
+        "requiresSPT": false,
+        "proof": []
+    }
+]
